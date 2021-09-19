@@ -21,6 +21,11 @@ jobs:
       - name: Setup bazelisk
         uses: bazelbuild/setup-bazelisk@v1
 
+      - name: Setup node
+        uses: actions/setup-node@v2.4.0
+        with:
+          node-version: 16
+
       - name: Mount the bazel cache
         uses: actions/cache@v2.1.6
         with:
