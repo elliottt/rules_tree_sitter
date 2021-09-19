@@ -35,4 +35,5 @@ jobs:
       - name: Run tests
         run: |
           node --version
+          which node
           bazelisk test --build_tests_only //tests
