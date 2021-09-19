@@ -16,11 +16,7 @@ def _key_to_resource(key, version):
 
 _GITHUB_BASE = "https://github.com/tree-sitter/tree-sitter"
 
-def get_version_info(version, url_bases = [_GITHUB_BASE]):
-    shas = VERSION_SHA256.get(version, None)
-    if shas == None:
-        return None
-
+def _make_version_info(version, shas, url_bases):
     urls = {}
 
     for key in shas:
@@ -34,3 +30,10 @@ def get_version_info(version, url_bases = [_GITHUB_BASE]):
         }
 
     return urls
+
+def get_version_info(version, url_bases = [_GITHUB_BASE]):
+    shas = VERSION_SHA256.get(version, None)
+    if shas == None:
+        return None
+
+    return _make_version_info(version, shas, url_bases)
