@@ -4,7 +4,7 @@ load("@rules_tree_sitter//tree_sitter/internal:versions.bzl", _get_version_info 
 _TREE_SITTER_BUILD = """
 
 cc_library(
-    name = "tree_sitter",
+    name = "tree_sitter_lib",
     srcs = glob([
         "lib/src/*.c",
         "lib/src/*.h",
@@ -20,14 +20,16 @@ cc_library(
 
 """
 
-_TREE_SITTER_BIN_BUILD = """
-
+_TREE_SITTER_BIN_BUILD_HEADER = """
 load("@rules_tree_sitter//tree_sitter/internal:repository.bzl", "tree_sitter_binary")
+"""
 
+_TREE_SITTER_BIN_BUILD = """
 tree_sitter_binary(
-    name = "tree_sitter",
-    archive = "tree-sitter-linux-x64.gz",
+    name = "{key}",
+    archive = "{key}.gz",
     visibility = ["//visibility:public"],
+    exec_compatible_with = [{platform}],
 )
 
 """
@@ -64,18 +66,35 @@ tree_sitter_binary = rule(
     provides = [DefaultInfo],
 )
 
+TOOL_PLATFORMS = {
+    "tree-sitter-linux-x64": ["@platforms//os:linux", "@platforms//cpu:x86_64"],
+    "tree-sitter-macos-x64": ["@platforms//os:macos", "@platforms//cpu:x86_64"],
+}
+
 def _tree_sitter_repository(ctx):
     info = _get_version_info(version = ctx.attr.version)
     if info == None:
         fail("No version information available for {}".format(ctx.attr.version))
 
+    bin_build = _TREE_SITTER_BIN_BUILD_HEADER
+
     for key in info:
         download = info[key]
         if download["prefix"] == "":
+
+            platform = TOOL_PLATFORMS.get(key, None)
+            if platform == None:
+                continue
+
             ctx.download(
                 url = download["urls"],
                 sha256 = download["sha256"],
                 output = "bin/{}.gz".format(key)
+            )
+
+            bin_build += _TREE_SITTER_BIN_BUILD.format(
+                key = key,
+                platform = ", ".join(['"{}"'.format(val) for val in platform]),
             )
 
         else:
@@ -86,7 +105,7 @@ def _tree_sitter_repository(ctx):
             )
 
     ctx.file("BUILD", _TREE_SITTER_BUILD)
-    ctx.file("bin/BUILD", _TREE_SITTER_BIN_BUILD)
+    ctx.file("bin/BUILD", bin_build)
 
 
 tree_sitter_repository = repository_rule(

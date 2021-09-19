@@ -1,7 +1,11 @@
 
-load("@rules_tree_sitter//tree_sitter/internal:versions.bzl", _DEFAULT_VERSION = "DEFAULT_VERSION")
+load("@rules_tree_sitter//tree_sitter/internal:versions.bzl", _DEFAULT_VERSION = "DEFAULT_VERSION", "VERSION_SHA256")
 load("@rules_tree_sitter//tree_sitter/internal:repository.bzl", _tree_sitter_repository = "tree_sitter_repository")
-load("@rules_tree_sitter//tree_sitter/internal:toolchain.bzl", "TREE_SITTER_TOOLCHAIN_TYPE")
+load(
+    "@rules_tree_sitter//tree_sitter/internal:toolchain.bzl",
+    "TREE_SITTER_TOOLCHAIN_TYPE",
+    _register_toolchains_for_version = "register_toolchains_for_version"
+)
 
 def tree_sitter_toolchain(ctx):
     return ctx.toolchains[TREE_SITTER_TOOLCHAIN_TYPE].tree_sitter_toolchain
@@ -9,47 +13,103 @@ def tree_sitter_toolchain(ctx):
 def tree_sitter_register_toolchains(version = _DEFAULT_VERSION):
     repo_name = "tree_sitter_v{}".format(version)
     _tree_sitter_repository(name = repo_name, version = version)
-    native.register_toolchains("@rules_tree_sitter//tree_sitter/toolchains:v{}".format(version))
+    _register_toolchains_for_version(version)
+
 
 _TREE_SITTER_LIBRARY = """
-"{tree_sitter}" generate --no-bindings --log "./{grammar}"
-
-mkdir -p "$(dirname "{parser_h}")"
+"{tree_sitter}" generate --no-bindings "./{grammar}"
+cp src/node-types.json "{node_types_json}"
 cp src/parser.c "{parser_c}"
 cp src/tree_sitter/parser.h "{parser_h}"
 
 """
 
-def _tree_sitter_library(ctx):
-
+def _tree_sitter_common(ctx):
     toolchain = ctx.toolchains[TREE_SITTER_TOOLCHAIN_TYPE].tree_sitter_toolchain
 
+    node_types_json = ctx.actions.declare_file("node-types.json")
     parser_c = ctx.actions.declare_file("parser.c")
     parser_h = ctx.actions.declare_file("tree_sitter/parser.h")
 
     ctx.actions.run_shell(
         inputs = [ctx.file.src],
         tools = [toolchain.tree_sitter_tool],
-        outputs = [parser_c, parser_h],
+        outputs = [node_types_json, parser_c, parser_h],
         command = _TREE_SITTER_LIBRARY.format(
             tree_sitter = toolchain.tree_sitter_tool.executable.path,
             grammar = ctx.file.src.path,
+            node_types_json = node_types_json.path,
             parser_c = parser_c.path,
             parser_h = parser_h.path,
         ),
     )
 
+    return struct(
+        toolchain = toolchain,
+        outputs = struct(
+            node_types_json = node_types_json,
+            parser_c = parser_c,
+            parser_h = parser_h,
+        ),
+    )
+
+def _cc_library(ctx, result):
+    cc_toolchain = ctx.attr._cc_toolchain[cc_common.CcToolchainInfo]
+
+    cc_feature_configuration = cc_common.configure_features(
+        ctx = ctx,
+        cc_toolchain = cc_toolchain,
+        requested_features = ctx.attr.features,
+    )
+
+    (cc_compilation_context, cc_compilation_outputs) = cc_common.compile(
+        name = ctx.attr.name,
+        actions = ctx.actions,
+        cc_toolchain = cc_toolchain,
+        feature_configuration = cc_feature_configuration,
+        srcs = [result.outputs.parser_c],
+        private_hdrs = [result.outputs.parser_h],
+        compilation_contexts = [result.toolchain.tree_sitter_lib.compilation_context],
+    )
+
+    (cc_linking_context, cc_linking_outputs) = cc_common.create_linking_context_from_compilation_outputs(
+        name = ctx.attr.name,
+        actions = ctx.actions,
+        cc_toolchain = cc_toolchain,
+        feature_configuration = cc_feature_configuration,
+        compilation_outputs = cc_compilation_outputs,
+        linking_contexts = [result.toolchain.tree_sitter_lib.linking_context],
+    )
+
+    outs = []
+
+    if cc_linking_outputs.library_to_link.static_library:
+        outs.append(cc_linking_outputs.library_to_link.static_library)
+    if cc_linking_outputs.library_to_link.dynamic_library:
+        outs.append(cc_linking_outputs.library_to_link.dynamic_library)
+
+    return struct(
+        outs = depset(direct = outs),
+        cc_info = CcInfo(
+            compilation_context = cc_compilation_context,
+            linking_context = cc_linking_context,
+        ),
+    )
+
+def _tree_sitter_cc_library(ctx):
+
+    result = _tree_sitter_common(ctx)
+    lib = _cc_library(ctx, result)
+
     return [
-        DefaultInfo(
-            files = depset([parser_c, parser_h]),
-        )
+        DefaultInfo(files = lib.outs),
+        lib.cc_info,
     ]
 
-tree_sitter_library = rule(
-    _tree_sitter_library,
+tree_sitter_cc_library = rule(
+    _tree_sitter_cc_library,
     attrs = {
         "src": attr.label(mandatory = True, allow_single_file = True),
-        "deps": attr.label_list(providers = [CcInfo]),
         "_cc_toolchain": attr.label(
             default = "@bazel_tools//tools/cpp:current_cc_toolchain",
         ),
@@ -58,4 +118,5 @@ tree_sitter_library = rule(
         DefaultInfo,
     ],
     toolchains = [TREE_SITTER_TOOLCHAIN_TYPE],
+    fragments = ["cpp"],
 )

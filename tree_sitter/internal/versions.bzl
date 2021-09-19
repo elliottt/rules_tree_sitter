@@ -4,6 +4,7 @@ DEFAULT_VERSION = "0.20.0"
 VERSION_SHA256 = {
     "0.20.0": {
         "tree-sitter-linux-x64": "9ba419d37e17c427d12cff58574af6f2bc9d61ccb4e806c3bd31d40ca1b9d935",
+        "tree-sitter-macos-x64": "2c31a7184954dc98c0a087ae1318248646178e79278cfe71c36f41dc707aa49c",
         "source-code": "4a8070b9de17c3b8096181fe8530320ab3e8cca685d8bee6a3e8d164b5fb47da",
     }
 }
