@@ -36,4 +36,4 @@ jobs:
         run: |
           node --version
           which node
-          bazelisk test --build_tests_only //tests
+          bazelisk test --strategy=standalone --build_tests_only //tests
