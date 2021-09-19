@@ -5,9 +5,10 @@ tree_sitter_cc_library(
     src = "hello.js",
 )
 
-cc_binary(
-    name = "parser",
-    srcs = ["parser.cc"],
-    deps = [":hello"],
+cc_test(
+    name = "tests",
+    srcs = ["tests.cc"],
+    deps = [":hello", "@doctest", "@doctest//:doctest_main"],
     copts = ["-std=c++17"],
 )
+
