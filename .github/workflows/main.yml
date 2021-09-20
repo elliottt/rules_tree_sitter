@@ -36,4 +36,6 @@ jobs:
         run: |
           node --version
           which node
+          ln -s /opt/hostedtoolcache/node/10.19.0/x64/node /usr/bin/node
+          which node
           bazelisk test --strategy=standalone --build_tests_only //tests
