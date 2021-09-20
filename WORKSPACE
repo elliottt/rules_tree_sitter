@@ -20,3 +20,14 @@ http_archive(
     build_file = "@rules_tree_sitter//third_party:doctest.BUILD",
     strip_prefix = "doctest-7d42bd0fab6c44010c8aed9338bd02bea5feba41",
 )
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "4e1a5633267a0ca1d550cced2919dd4148575c0bafd47608b88aea79c41b5ca3",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.2.0/rules_nodejs-4.2.0.tar.gz"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
+node_repositories(
+    node_version = "10.19.0",
+)
