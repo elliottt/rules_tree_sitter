@@ -21,11 +21,6 @@ jobs:
       - name: Setup bazelisk
         uses: bazelbuild/setup-bazelisk@v1
 
-      - name: Setup node
-        uses: actions/setup-node@v2.4.0
-        with:
-          node-version: 10.19.0
-
       - name: Mount the bazel cache
         uses: actions/cache@v2.1.6
         with:
@@ -34,8 +29,4 @@ jobs:
 
       - name: Run tests
         run: |
-          node --version
-          which node
-          sudo ln -s /opt/hostedtoolcache/node/10.19.0/x64/node /usr/bin/node
-          which node
           bazelisk test --strategy=standalone --build_tests_only //tests
