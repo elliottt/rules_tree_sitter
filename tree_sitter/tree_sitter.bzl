@@ -100,6 +100,39 @@ def _cc_library(ctx, result):
         ),
     )
 
+def _tree_sitter(ctx):
+    result = _tree_sitter_common(ctx)
+
+    return [
+        DefaultInfo(
+            files = depset(
+                direct = [
+                    result.outputs.node_types_json,
+                    result.outputs.parser_c,
+                    result.outputs.parser_h,
+                ],
+            ),
+        ),
+    ]
+
+tree_sitter = rule(
+    implementation = _tree_sitter,
+    attrs = {
+        "src": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+        ),
+        "_node_bin": attr.label(
+            default = "@build_bazel_rules_nodejs//toolchains/node:node_bin",
+            allow_single_file = True,
+        ),
+    },
+    provides = [
+        DefaultInfo,
+    ],
+    toolchains = [TREE_SITTER_TOOLCHAIN_TYPE],
+)
+
 def _tree_sitter_cc_library(ctx):
 
     result = _tree_sitter_common(ctx)
