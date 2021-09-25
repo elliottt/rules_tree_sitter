@@ -20,8 +20,8 @@ node_repositories(
 
 http_archive(
     name = "rules_tree_sitter",
-    urls = ["https://github.com/elliottt/rules_tree_sitter/archive/060b9eb46619e3c22f6efbdba49279e7abbfb11f.tar.gz"],
-    sha256 = "",
+    urls = ["https://github.com/elliottt/rules_tree_sitter/archive/8d4935ff6384cf48411f9cccd3b3ee22231a2893.tar.gz"],
+    sha256 = "e2753d418e193da3a14cfad2429d2f0aa3f1fb88c150b33aabc4da5b8b6ba6fb",
 )
 ```
 
