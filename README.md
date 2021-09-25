@@ -2,6 +2,11 @@
 
 Bazel rules for interacting with tree-sitter grammars.
 
+## TODO
+
+* [ ] Support compilation of grammars with `externals`
+* [ ] Better support for the `tree_sitter` rule
+
 ## Usage
 
 ```python
