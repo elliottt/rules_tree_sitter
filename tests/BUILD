@@ -2,7 +2,7 @@ load("@rules_tree_sitter//tree_sitter:tree_sitter.bzl", "tree_sitter_cc_library"
 
 tree_sitter_cc_library(
     name = "hello",
-    src = "hello.js",
+    grammar = "hello.js",
 )
 
 cc_test(

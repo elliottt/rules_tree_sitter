@@ -35,12 +35,12 @@ def _tree_sitter_common(ctx):
     parser_h = ctx.actions.declare_file("tree_sitter/parser.h")
 
     ctx.actions.run_shell(
-        inputs = [ctx.file.src],
+        inputs = [ctx.file.grammar],
         tools = [toolchain.tree_sitter_tool, node_bin.files_to_run],
         outputs = [node_types_json, parser_c, parser_h],
         command = _TREE_SITTER_LIBRARY.format(
             tree_sitter = toolchain.tree_sitter_tool.executable.path,
-            grammar = ctx.file.src.path,
+            grammar = ctx.file.grammar.path,
             node_types_json = node_types_json.path,
             parser_c = parser_c.path,
             parser_h = parser_h.path,
@@ -71,7 +71,7 @@ def _cc_library(ctx, result):
         actions = ctx.actions,
         cc_toolchain = cc_toolchain,
         feature_configuration = cc_feature_configuration,
-        srcs = [result.outputs.parser_c],
+        srcs = [result.outputs.parser_c] + ctx.files.srcs,
         private_hdrs = [result.outputs.parser_h],
         compilation_contexts = [result.toolchain.tree_sitter_lib.compilation_context],
     )
@@ -100,39 +100,6 @@ def _cc_library(ctx, result):
         ),
     )
 
-def _tree_sitter(ctx):
-    result = _tree_sitter_common(ctx)
-
-    return [
-        DefaultInfo(
-            files = depset(
-                direct = [
-                    result.outputs.node_types_json,
-                    result.outputs.parser_c,
-                    result.outputs.parser_h,
-                ],
-            ),
-        ),
-    ]
-
-tree_sitter = rule(
-    implementation = _tree_sitter,
-    attrs = {
-        "src": attr.label(
-            mandatory = True,
-            allow_single_file = True,
-        ),
-        "_node_bin": attr.label(
-            default = "@build_bazel_rules_nodejs//toolchains/node:node_bin",
-            allow_single_file = True,
-        ),
-    },
-    provides = [
-        DefaultInfo,
-    ],
-    toolchains = [TREE_SITTER_TOOLCHAIN_TYPE],
-)
-
 def _tree_sitter_cc_library(ctx):
 
     result = _tree_sitter_common(ctx)
@@ -146,7 +113,8 @@ def _tree_sitter_cc_library(ctx):
 tree_sitter_cc_library = rule(
     _tree_sitter_cc_library,
     attrs = {
-        "src": attr.label(mandatory = True, allow_single_file = True),
+        "grammar": attr.label(mandatory = True, allow_single_file = True),
+        "srcs": attr.label_list(allow_files = True),
         "_cc_toolchain": attr.label(
             default = "@bazel_tools//tools/cpp:current_cc_toolchain",
         ),

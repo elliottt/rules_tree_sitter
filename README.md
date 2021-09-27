@@ -2,11 +2,6 @@
 
 Bazel rules for interacting with tree-sitter grammars.
 
-## TODO
-
-* [ ] Support compilation of grammars with `externals`
-* [ ] Better support for the `tree_sitter` rule
-
 ## Usage
 
 ```python
@@ -39,7 +34,7 @@ load("@rules_tree_sitter//tree_sitter:tree_sitter.bzl", "tree_sitter_cc_library"
 
 tree_sitter_cc_library(
     name = "hello_parser",
-    src = "grammar.js",
+    grammar = "grammar.js",
 )
 
 cc_binary(
