@@ -106,8 +106,8 @@ def _tree_sitter_cc_library(ctx):
     lib = _cc_library(ctx, result)
 
     return [
-        DefaultInfo(files = lib.outs),
         lib.cc_info,
+        DefaultInfo(files = lib.outs),
     ]
 
 tree_sitter_cc_library = rule(
@@ -124,6 +124,7 @@ tree_sitter_cc_library = rule(
         ),
     },
     provides = [
+        CcInfo,
         DefaultInfo,
     ],
     toolchains = [TREE_SITTER_TOOLCHAIN_TYPE],
