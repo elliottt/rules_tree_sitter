@@ -19,7 +19,11 @@ def tree_sitter_register_toolchains(version = _DEFAULT_VERSION):
 _TREE_SITTER_LIBRARY = """
 export PATH="$PWD/{node_path}:$PATH"
 "{tree_sitter}" generate --no-bindings "./{grammar}"
-cp src/node-types.json "{node_types_json}"
+
+if [ -n "{node_types_json}" ]; then
+  mv src/node-types.json "{node_types_json}"
+fi
+
 cp src/parser.c "{parser_c}"
 cp src/tree_sitter/parser.h "{parser_h}"
 
@@ -30,18 +34,23 @@ def _tree_sitter_common(ctx):
 
     toolchain = ctx.toolchains[TREE_SITTER_TOOLCHAIN_TYPE].tree_sitter_toolchain
 
-    node_types_json = ctx.actions.declare_file("node-types.json")
+    node_types_json = ctx.outputs.node_types
     parser_c = ctx.actions.declare_file("parser.c")
     parser_h = ctx.actions.declare_file("tree_sitter/parser.h")
+
+    outputs = [parser_c, parser_h]
+
+    if node_types_json != None:
+        outputs.append(node_types_json)
 
     ctx.actions.run_shell(
         inputs = [ctx.file.grammar],
         tools = [toolchain.tree_sitter_tool, node_bin.files_to_run],
-        outputs = [node_types_json, parser_c, parser_h],
+        outputs = outputs,
         command = _TREE_SITTER_LIBRARY.format(
             tree_sitter = toolchain.tree_sitter_tool.executable.path,
             grammar = ctx.file.grammar.path,
-            node_types_json = node_types_json.path,
+            node_types_json = node_types_json.path if node_types_json != None else "",
             parser_c = parser_c.path,
             parser_h = parser_h.path,
             node_path = node_bin.files_to_run.executable.dirname,
@@ -51,7 +60,6 @@ def _tree_sitter_common(ctx):
     return struct(
         toolchain = toolchain,
         outputs = struct(
-            node_types_json = node_types_json,
             parser_c = parser_c,
             parser_h = parser_h,
         ),
@@ -115,6 +123,10 @@ tree_sitter_cc_library = rule(
     attrs = {
         "grammar": attr.label(mandatory = True, allow_single_file = True),
         "srcs": attr.label_list(allow_files = True),
+        "node_types": attr.output(
+            doc = "The name for the node-types.json file",
+            mandatory = False
+        ),
         "_cc_toolchain": attr.label(
             default = "@bazel_tools//tools/cpp:current_cc_toolchain",
         ),
@@ -126,6 +138,7 @@ tree_sitter_cc_library = rule(
     provides = [
         CcInfo,
         DefaultInfo,
+        OutputGroupInfo,
     ],
     toolchains = [TREE_SITTER_TOOLCHAIN_TYPE],
     fragments = ["cpp"],
