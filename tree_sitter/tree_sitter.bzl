@@ -35,8 +35,8 @@ def _tree_sitter_common(ctx):
     toolchain = ctx.toolchains[TREE_SITTER_TOOLCHAIN_TYPE].tree_sitter_toolchain
 
     node_types_json = ctx.outputs.node_types
-    parser_c = ctx.actions.declare_file("parser.c")
-    parser_h = ctx.actions.declare_file("tree_sitter/parser.h")
+    parser_c = ctx.actions.declare_file("_{}.tree_sitter/parser.c".format(ctx.label.name))
+    parser_h = ctx.actions.declare_file("_{}.tree_sitter/tree_sitter/parser.h".format(ctx.label.name))
 
     outputs = [parser_c, parser_h]
 
