@@ -1,11 +1,13 @@
 
-DEFAULT_VERSION = "0.20.6"
+DEFAULT_VERSION = "0.20.8"
 
 VERSION_SHA256 = {
-    "0.20.6": {
-        "tree-sitter-linux-x64": "f7001a0ff42cb27c0b0a9023352b31273e98f6c72282003c6bd1fe9ec1018491",
-        "tree-sitter-macos-x64": "3719822cbb27ed4e2132a28a9740803b151fc7aa4597986bc0bd51f3a0b8ff1e",
-        "source-code": "4d37eaef8a402a385998ff9aca3e1043b4a3bba899bceeff27a7178e1165b9de",
+    "0.20.8": {
+        "tree-sitter-linux-x64": "90734a35cebd1aa4c0a5f7cbe81063724576f489951e5b55f88dcf073057d100",
+        "tree-sitter-linux-arm64": "51a50f907f71157003ace392c0bb1c0e8fee2973834e8ee1622da0ac2bb9bffc",
+        "tree-sitter-macos-x64": "90e59681b60b15d28b01b3560d2e0e262eacf5efca16990c0fb814c661d992d9",
+        "tree-sitter-macos-arm64": "e443779655ed3422d7331089e3fdc3c4be662c271353634a30115ba669bf2c0f",
+        "source-code": "6181ede0b7470bfca37e293e7d5dc1d16469b9485d13f13a605baec4a8b1f791",
     }
 }
 
