@@ -49,7 +49,7 @@ def _tree_sitter_common(ctx):
         outputs = outputs,
         command = _TREE_SITTER_LIBRARY.format(
             tree_sitter = toolchain.tree_sitter_tool.executable.path,
-            grammar = ctx.files.grammar[0].path,
+            grammar = ctx.file.grammar.path,
             node_types_json = node_types_json.path if node_types_json != None else "",
             parser_c = parser_c.path,
             parser_h = parser_h.path,
@@ -121,7 +121,7 @@ def _tree_sitter_cc_library(ctx):
 tree_sitter_cc_library = rule(
     _tree_sitter_cc_library,
     attrs = {
-        "grammar": attr.label_list(mandatory = True, allow_files = True),
+        "grammar": attr.label(mandatory = True, allow_single_file = True),
         "srcs": attr.label_list(allow_files = True),
         "node_types": attr.output(
             doc = "The name for the node-types.json file",
