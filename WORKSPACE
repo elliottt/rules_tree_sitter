@@ -15,10 +15,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "doctest",
-    urls = ["https://github.com/onqtam/doctest/archive/7d42bd0fab6c44010c8aed9338bd02bea5feba41.zip"],
-    sha256 = "b33c8e954d15a146bb744ca29f4ca204b955530f52b2f8a895746a99cee4f2df",
-    build_file = "@rules_tree_sitter//third_party:doctest.BUILD",
-    strip_prefix = "doctest-7d42bd0fab6c44010c8aed9338bd02bea5feba41",
+    urls = ["https://github.com/doctest/doctest/archive/ae7a13539fb71f270b87eb2e874fbac80bc8dda2.zip"],
+    sha256 = "ed32c51a7750d5996c7f8bc858890991be9e8153c37f9ad0c1418060ff894f72",
+    strip_prefix = "doctest-ae7a13539fb71f270b87eb2e874fbac80bc8dda2",
 )
 
 http_archive(

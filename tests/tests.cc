@@ -1,9 +1,7 @@
-#include <doctest.h>
+#include "doctest/doctest.h"
 #include <string>
 #include <tree_sitter/api.h>
 #include <tree_sitter/parser.h>
-
-#include <iostream>
 
 using std::string;
 
