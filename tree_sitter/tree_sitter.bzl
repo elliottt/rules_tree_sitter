@@ -81,6 +81,7 @@ def _cc_library(ctx, result):
         feature_configuration = cc_feature_configuration,
         srcs = [result.outputs.parser_c] + ctx.files.srcs,
         private_hdrs = [result.outputs.parser_h],
+        user_compile_flags = ["-Wno-unused-but-set-variable"],
         compilation_contexts = [result.toolchain.tree_sitter_lib.compilation_context],
     )
 
@@ -131,7 +132,7 @@ tree_sitter_cc_library = rule(
             default = "@bazel_tools//tools/cpp:current_cc_toolchain",
         ),
         "_node_bin": attr.label(
-            default = "@build_bazel_rules_nodejs//toolchains/node:node_bin",
+            default = "@nodejs//:node",
             allow_single_file = True,
         ),
     },
