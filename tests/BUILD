@@ -8,7 +8,7 @@ tree_sitter_cc_library(
 cc_test(
     name = "tests",
     srcs = ["tests.cc"],
-    deps = [":hello", "@doctest", "@doctest//:doctest_main"],
+    deps = [":hello", "@doctest//doctest", "@doctest//doctest:main"],
     copts = ["-std=c++17"],
 )
 
