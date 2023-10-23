@@ -15,7 +15,7 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
 node_repositories(
-    node_version = "10.19.0",
+    node_version = "16.9.1",
 )
 
 http_archive(

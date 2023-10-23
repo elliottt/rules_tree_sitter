@@ -21,15 +21,12 @@ http_archive(
 )
 
 http_archive(
-    name = "rules_nodejs",
-    sha256 = "d124665ea12f89153086746821cf6c9ef93ab88360a50c1aeefa1fe522421704",
-    strip_prefix = "rules_nodejs-6.0.0-beta1",
-    url = "https://github.com/bazelbuild/rules_nodejs/releases/download/v6.0.0-beta1/rules_nodejs-v6.0.0-beta1.tar.gz",
+    name = "build_bazel_rules_nodejs",
+    sha256 = "4e1a5633267a0ca1d550cced2919dd4148575c0bafd47608b88aea79c41b5ca3",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.2.0/rules_nodejs-4.2.0.tar.gz"],
 )
 
-load("@rules_nodejs//nodejs:repositories.bzl", "DEFAULT_NODE_VERSION", "nodejs_register_toolchains")
-
-nodejs_register_toolchains(
-    name = "nodejs",
-    node_version = DEFAULT_NODE_VERSION,
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
+node_repositories(
+    node_version = "16.9.1",
 )

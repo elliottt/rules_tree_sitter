@@ -107,5 +107,4 @@ def declare_toolchains():
                 toolchain = toolchain,
                 toolchain_type = TREE_SITTER_TOOLCHAIN_TYPE,
                 exec_compatible_with = platforms,
-                target_compatible_with = platforms,
             )
