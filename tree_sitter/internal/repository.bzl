@@ -68,7 +68,9 @@ tree_sitter_binary = rule(
 
 TOOL_PLATFORMS = {
     "tree-sitter-linux-x64": ["@platforms//os:linux", "@platforms//cpu:x86_64"],
+    "tree-sitter-linux-arm64": ["@platforms//os:linux", "@platforms//cpu:aarch64"],
     "tree-sitter-macos-x64": ["@platforms//os:macos", "@platforms//cpu:x86_64"],
+    "tree-sitter-macos-arm64": ["@platforms//os:macos", "@platforms//cpu:aarch64"],
 }
 
 def _tree_sitter_repository(ctx):

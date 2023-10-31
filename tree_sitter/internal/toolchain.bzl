@@ -95,7 +95,8 @@ def setup_tree_sitter_toolchains():
 def declare_toolchains():
     for version in VERSION_SHA256:
         for key in VERSION_SHA256[version]:
-            if None == TOOL_PLATFORMS.get(key, None):
+            platforms = TOOL_PLATFORMS.get(key, None)
+            if platforms == None:
                 continue
 
             name = _toolchain_name(key, version)
@@ -105,4 +106,5 @@ def declare_toolchains():
                 name = name,
                 toolchain = toolchain,
                 toolchain_type = TREE_SITTER_TOOLCHAIN_TYPE,
+                exec_compatible_with = platforms,
             )
